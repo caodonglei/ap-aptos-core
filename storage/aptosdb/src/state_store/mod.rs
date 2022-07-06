@@ -7,6 +7,10 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::{anyhow, ensure, format_err, Result};
 
+use crate::{
+    jellyfish_merkle_node::JellyfishMerkleNodeSchema,
+    metrics::{NODE_COUNT, PROOF_READ, VALUE_READ},
+};
 use aptos_crypto::{
     hash::{CryptoHash, SPARSE_MERKLE_PLACEHOLDER_HASH},
     HashValue,
@@ -29,6 +33,7 @@ use aptos_types::{
 };
 use executor_types::in_memory_state_calculator::InMemoryStateCalculator;
 use schemadb::{ReadOptions, SchemaBatch, DB};
+use std::time::Instant;
 use storage_interface::{
     cached_state_view::CachedStateView, in_memory_state::InMemoryState,
     sync_proof_fetcher::SyncProofFetcher, DbReader, StateSnapshotReceiver,
@@ -45,12 +50,13 @@ use crate::{
 mod state_store_test;
 
 type StateValueBatch = aptos_jellyfish_merkle::StateValueBatch<StateKey, StateValue>;
+pub type TreeUpdateBatch = aptos_jellyfish_merkle::TreeUpdateBatch<StateKey>;
 
 pub const MAX_VALUES_TO_FETCH_FOR_KEY_PREFIX: usize = 10_000;
 const MAX_WRITE_SETS_AFTER_CHECKPOINT: LeafCount = 200_000;
 
 #[derive(Debug)]
-pub(crate) struct StateStore {
+pub struct StateStore {
     ledger_db: Arc<DB>,
     pub state_merkle_db: Arc<StateMerkleDb>,
     in_memory_state: Mutex<InMemoryState>,
@@ -107,14 +113,18 @@ impl DbReader for StateStore {
         state_key: &StateKey,
         version: Version,
     ) -> Result<(Option<StateValue>, SparseMerkleProof)> {
+        let t = Instant::now();
         let (leaf_data, proof) = self.state_merkle_db.get_with_proof(state_key, version)?;
-        Ok((
+        PROOF_READ.observe(t.elapsed().as_secs_f64() * 1000000000.0);
+        let r = Ok((
             match leaf_data {
                 Some((_, (key, version))) => Some(self.expect_value_by_version(&key, version)?),
                 None => None,
             },
             proof,
-        ))
+        ));
+        VALUE_READ.observe(t.elapsed().as_secs_f64() * 1000000000.0);
+        r
     }
 }
 
@@ -347,6 +357,24 @@ impl StateStore {
                 .batch_put_value_set(value_set, node_hashes, base_version, version)
         }?;
 
+        let count = tree_update_batch
+            .node_batch
+            .iter()
+            .flatten()
+            .collect::<Vec<_>>()
+            .len() as i64;
+        NODE_COUNT.set(count);
+        println!("{} nodes to update.", count);
+        self.state_merkle_db.version_cache.add_version(
+            version,
+            tree_update_batch
+                .node_batch
+                .iter()
+                .flatten()
+                .cloned()
+                .collect(),
+        );
+
         let mut batch = SchemaBatch::new();
         {
             let _timer = OTHER_TIMERS_SECONDS
@@ -375,6 +403,9 @@ impl StateStore {
             .with_label_values(&["commit_jellyfish_merkle_nodes"])
             .start_timer();
         self.state_merkle_db.write_schemas(batch)?;
+        self.state_merkle_db
+            .version_cache
+            .maybe_evict_version(&self.state_merkle_db.lru_cache);
         Ok(new_root_hash)
     }
 
