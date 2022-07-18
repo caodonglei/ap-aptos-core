@@ -119,8 +119,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/rust-setup
-      - run: cargo x lint
-      - run: cargo xclippy --workspace --all-targets
+      - run: cargo clippy --workspace --all-targets
       - run: cargo fmt --check
       - run: cargo install cargo-sort
       - run: cargo sort --grouped --check --workspace
@@ -132,21 +131,18 @@ jobs:
         with:
           fetch-depth: 0 # get all the history because cargo xtest --change-since origin/main requires it.
       - uses: ./.github/actions/rust-setup
-      - run: cargo xtest --doc --unit --exclude aptos-node-checker
+      - run: cargo test --doc --workspace --exclude aptos-node-checker
 
   rust-unit-nextest:
     runs-on: high-perf-docker
-    strategy:
-      fail-fast: false
-      matrix:
-        run: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # get all the history because cargo xtest --change-since origin/main requires it.
       - uses: ./.github/actions/rust-setup
       - run: docker run --detach -p 5432:5432 cimg/postgres:14.2
-      - run: cargo nextest --nextest-profile ci --unit --exclude backup-cli
+      - run: curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
+      - run: cargo nextest run --profile ci --workspace --exclude backup-cli
         env:
           INDEXER_DATABASE_URL: postgresql://postgres@localhost/postgres
 
@@ -169,20 +165,17 @@ jobs:
           datadog-site: us5.datadoghq.com
           service: rust-unit-nextest
           files: target/nextest/ci/junit.xml
-          tags: run:${{ matrix.run }}
+          # tags: run:${{ matrix.run }}
 
   rust-e2e-test:
     runs-on: high-perf-docker
-    strategy:
-      fail-fast: false
-      matrix:
-        run: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/rust-setup
       - run: docker run --detach -p 5432:5432 cimg/postgres:14.2
+      - run: curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
       # --test-threads is intentionally set to reduce resource contention in ci jobs. Increasing this, increases job failures and retries.
-      - run: cargo nextest --nextest-profile ci --package smoke-test
+      - run: cargo nextest run --profile ci --package smoke-test
         env:
           RUST_BACKTRACE: full
           INDEXER_DATABASE_URL: postgresql://postgres@localhost/postgres
@@ -206,7 +199,7 @@ jobs:
           datadog-site: us5.datadoghq.com
           service: rust-e2e-test
           files: target/nextest/ci/junit.xml
-          tags: run:${{ matrix.run }}
+          # tags: run:${{ matrix.run }}
 
       - name: Upload smoke test logs for failures
         uses: actions/upload-artifact@v3
