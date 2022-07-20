@@ -6,9 +6,11 @@ use anyhow::Context as AnyhowContext;
 use aptos_config::config::{ApiConfig, NodeConfig};
 use aptos_mempool::MempoolClientSender;
 use aptos_types::chain_id::ChainId;
+use std::str::FromStr;
 use std::{convert::Infallible, net::SocketAddr, sync::Arc};
 use storage_interface::DbReader;
 use tokio::runtime::{Builder, Runtime};
+use warp::hyper::Uri;
 use warp::{Filter, Reply};
 
 /// Creates HTTP server (warp-based) serves for both REST and JSON-RPC API.
@@ -29,16 +31,22 @@ pub fn bootstrap(
         .context("[api] failed to create runtime")?;
     let context = Context::new(chain_id, db, mp_sender, config.clone());
 
-    if config.api.use_poem_backend {
-        attach_poem_to_runtime(&runtime, context, config)
-            .context("Failed to attach poem to runtime")?;
-    } else {
-        let api = WebServer::from(config.api.clone());
-        runtime.spawn(async move {
-            let routes = index::routes(context);
-            api.serve(routes).await;
+    let poem_address = attach_poem_to_runtime(&runtime, context.clone(), config)
+        .context("Failed to attach poem to runtime")?;
+
+    let api = WebServer::from(config.api.clone());
+    runtime.spawn(async move {
+        // TODO: This redirect is temporary while we have both APIs running.
+        // I haven't tested that this works with https, though I assume Poem
+        // will upgrade the request if necessary.
+        let redirect = warp::path("v1").and(warp::any()).map(move || {
+            warp::redirect::permanent(
+                Uri::from_str(format!("http://{}", poem_address).as_str()).unwrap(),
+            )
         });
-    }
+        let routes = redirect.or(index::routes(context));
+        api.serve(routes).await;
+    });
 
     Ok(runtime)
 }

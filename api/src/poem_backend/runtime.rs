@@ -1,7 +1,7 @@
 // Copyright (c) Aptos
 // SPDX-License-Identifier: Apache-2.0
 
-use std::sync::Arc;
+use std::{net::SocketAddr, sync::Arc};
 
 use super::{middleware_log, AccountsApi, BasicApi, EventsApi, IndexApi};
 
@@ -18,11 +18,12 @@ use poem::{
 use poem_openapi::{ContactObject, LicenseObject, OpenApiService};
 use tokio::runtime::Runtime;
 
+/// Returns address it is running at
 pub fn attach_poem_to_runtime(
     runtime: &Runtime,
     context: Context,
     config: &NodeConfig,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<SocketAddr> {
     let context = Arc::new(context);
 
     let apis = (
@@ -55,7 +56,10 @@ pub fn attach_poem_to_runtime(
     let spec_json = api_service.spec_endpoint();
     let spec_yaml = api_service.spec_endpoint_yaml();
 
-    let address = config.api.address;
+    let mut address = config.api.address;
+
+    // TODO: This is temporary while we serve both APIs simulatenously.
+    address.set_port(address.port() + 1);
 
     let listener = match (&config.api.tls_cert_path, &config.api.tls_key_path) {
         (Some(tls_cert_path), Some(tls_key_path)) => {
@@ -97,5 +101,5 @@ pub fn attach_poem_to_runtime(
             .map_err(anyhow::Error::msg)
     });
 
-    Ok(())
+    Ok(address)
 }
