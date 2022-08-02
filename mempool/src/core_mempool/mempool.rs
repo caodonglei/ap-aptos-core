@@ -71,6 +71,7 @@ impl Mempool {
         self.log_latency(*sender, sequence_number, metric_label);
         self.metrics_cache.remove(&(*sender, sequence_number));
 
+        /*
         let current_seq_number = self
             .sequence_number_cache
             .remove(sender)
@@ -107,6 +108,7 @@ impl Mempool {
                 .insert(*sender, new_seq_number.min_seq());
             self.transactions.commit_transaction(sender, new_seq_number);
         }
+        */
     }
 
     fn log_latency(&self, account: AccountAddress, sequence_number: u64, metric: &str) {
@@ -132,6 +134,7 @@ impl Mempool {
         crsn_or_seqno: AccountSequenceInfo,
         timeline_state: TimelineState,
     ) -> MempoolStatus {
+        /*
         let db_sequence_number = crsn_or_seqno.min_seq();
         trace!(
             LogSchema::new(LogEntry::AddTxn)
@@ -156,14 +159,14 @@ impl Mempool {
                 sequence_number.min_seq(),
             ));
         }
-
+        */
         let expiration_time =
             aptos_infallible::duration_since_epoch() + self.system_transaction_timeout;
         if timeline_state != TimelineState::NonQualified {
             self.metrics_cache
                 .insert((txn.sender(), txn.sequence_number()), SystemTime::now());
         }
-
+        /*
         let txn_info = MempoolTransaction::new(
             txn,
             expiration_time,
@@ -173,6 +176,8 @@ impl Mempool {
         );
 
         self.transactions.insert(txn_info)
+        */
+        MempoolStatus::new(MempoolStatusCode::Accepted)
     }
 
     /// Fetches next block of transactions for consensus.
@@ -195,6 +200,7 @@ impl Mempool {
         let mut skipped = HashSet::new();
         let seen_size = seen.len();
         let mut txn_walked = 0usize;
+        /*
         // iterate over the queue of transactions based on gas price
         'main: for txn in self.transactions.iter_queue() {
             txn_walked += 1;
@@ -234,6 +240,7 @@ impl Mempool {
                 skipped.insert(TxnPointer::from(txn));
             }
         }
+        */
         let result_size = result.len();
         // convert transaction pointers to real values
         let mut block_log = TxnsLog::new();
