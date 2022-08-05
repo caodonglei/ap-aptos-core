@@ -133,7 +133,10 @@ pub(crate) async fn process_client_get_transaction<V>(
 {
     timer.stop_and_record();
     let _timer = counters::process_get_txn_latency_timer_client();
+    /* TODO: 需要代理
     let txn = smp.mempool.lock().get_by_hash(hash);
+    */
+    let txt:SignedTransaction;
 
     if callback.send(txn).is_err() {
         error!(LogSchema::event_log(
@@ -234,7 +237,7 @@ where
     V: TransactionValidation,
 {
     let mut statuses = vec![];
-
+    /* TODO: 需要代理下面的功能
     let start_storage_read = Instant::now();
     let state_view = smp
         .db
@@ -327,6 +330,7 @@ where
             }
         }
     }
+    */
     notify_subscribers(SharedMempoolNotification::NewTransactions, &smp.subscribers);
     statuses
 }

@@ -172,6 +172,7 @@ fn handle_commit_notification<V>(
         counters::COMMIT_STATE_SYNC_LABEL,
         msg.transactions.len(),
     );
+    /*
     process_committed_transactions(
         &smp.mempool,
         msg.transactions
@@ -184,6 +185,7 @@ fn handle_commit_notification<V>(
         msg.block_timestamp_usecs,
         false,
     );
+    */
     smp.validator.write().notify_commit();
     let counter_result = if mempool_listener.ack_commit_notification(msg).is_err() {
         error!(LogSchema::event_log(

@@ -197,10 +197,10 @@ impl Mempool {
         // Later txn has higher gas price and will be observed first in priority index iterator,
         // but can't be executed before first txn. Once observed, such txn will be saved in
         // `skipped` DS and rechecked once it's ancestor becomes available
-        let mut skipped = HashSet::new();
         let seen_size = seen.len();
         let mut txn_walked = 0usize;
         /*
+        let mut skipped = HashSet::new();
         // iterate over the queue of transactions based on gas price
         'main: for txn in self.transactions.iter_queue() {
             txn_walked += 1;
