@@ -16,10 +16,10 @@ use aptos_types::{
     on_chain_config::OnChainConfigPayload,
     transaction::{SignedTransaction, VMValidatorResult},
 };
+use storage_interface::state_view::DbStateView;
 use storage_interface::{
     cached_state_view::CachedDbStateView, state_view::LatestDbStateCheckpointView, DbReader,
 };
-use storage_interface::state_view::DbStateView;
 
 pub trait TransactionValidation: Send + Sync + Clone {
     type ValidationInstance: aptos_vm::VMValidator;
