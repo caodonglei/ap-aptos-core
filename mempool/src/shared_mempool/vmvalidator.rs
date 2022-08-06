@@ -5,6 +5,10 @@
  * 将vm-validator/src/mocks/mock_vm_validator.rs复制到mempool，
  * 用于测试。
  */
+use fail::fail_point;
+use std::sync::Arc;
+use anyhow::Result;
+
 use aptos_vm::AptosVM;
 use aptos_types::{
     account_address::AccountAddress,

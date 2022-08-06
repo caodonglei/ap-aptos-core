@@ -138,7 +138,7 @@ pub(crate) async fn process_client_get_transaction<V>(
     /* TODO: 需要代理
     let txn = smp.mempool.lock().get_by_hash(hash);
     */
-    let txt:SignedTransaction;
+    let txn:SignedTransaction;
 
     if callback.send(txn).is_err() {
         error!(LogSchema::event_log(
