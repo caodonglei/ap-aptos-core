@@ -35,7 +35,7 @@ use std::{
 };
 use storage_interface::DbReader;
 use tokio::runtime::Handle;
-use vm_validator::vm_validator::TransactionValidation;
+use vmvalidator::TransactionValidation;
 
 /// Struct that owns all dependencies required by shared mempool routines.
 #[derive(Clone)]

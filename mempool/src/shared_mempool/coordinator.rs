@@ -34,7 +34,7 @@ use std::{
 };
 use tokio::{runtime::Handle, time::interval};
 use tokio_stream::wrappers::IntervalStream;
-use vm_validator::vm_validator::TransactionValidation;
+use vmvalidator::TransactionValidation;
 
 use super::types::MempoolClientRequest;
 

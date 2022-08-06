@@ -48,7 +48,7 @@ use std::{
     time::{Duration, Instant, SystemTime},
 };
 use thiserror::Error;
-use vm_validator::vm_validator::TransactionValidation;
+use vmvalidator::TransactionValidation;
 
 /// Container for exchanging transactions with other Mempools.
 #[derive(Clone, Debug, Deserialize, Serialize)]

@@ -16,7 +16,7 @@ use proptest::{
 };
 use std::{collections::HashMap, sync::Arc};
 use storage_interface::mock::MockDbReaderWriter;
-use vm_validator::mocks::mock_vm_validator::MockVMValidator;
+use vmvalidator::MockVMValidator;
 
 pub fn mempool_incoming_transactions_strategy(
 ) -> impl Strategy<Value = (Vec<SignedTransaction>, TimelineState)> {

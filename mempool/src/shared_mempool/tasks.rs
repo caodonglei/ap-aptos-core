@@ -38,7 +38,7 @@ use std::{
 };
 use storage_interface::state_view::LatestDbStateCheckpointView;
 use tokio::runtime::Handle;
-use vm_validator::vm_validator::{get_account_sequence_number, TransactionValidation};
+use vmvalidator::{get_account_sequence_number, TransactionValidation};
 
 // ============================== //
 //  broadcast_coordinator tasks  //

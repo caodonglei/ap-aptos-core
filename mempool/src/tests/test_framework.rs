@@ -42,7 +42,7 @@ use std::{
 use storage_interface::{mock::MockDbReaderWriter, DbReaderWriter};
 use tokio::{runtime::Handle, time::Duration};
 use tokio_stream::StreamExt;
-use vm_validator::mocks::mock_vm_validator::MockVMValidator;
+use vmvalidator::MockVMValidator;
 
 /// An individual mempool node that runs in it's own runtime.
 ///

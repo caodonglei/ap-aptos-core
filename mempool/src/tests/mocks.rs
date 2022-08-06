@@ -29,9 +29,7 @@ use network::{
 use std::{collections::HashSet, sync::Arc};
 use storage_interface::{mock::MockDbReaderWriter, DbReaderWriter};
 use tokio::runtime::{Builder, Handle, Runtime};
-use vm_validator::{
-    mocks::mock_vm_validator::MockVMValidator, vm_validator::TransactionValidation,
-};
+use vmvalidator::{MockVMValidator, TransactionValidation};
 
 /// Mock of a running instance of shared mempool.
 pub struct MockSharedMempool {

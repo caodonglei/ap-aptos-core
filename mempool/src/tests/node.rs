@@ -43,7 +43,7 @@ use std::{
 };
 use storage_interface::{mock::MockDbReaderWriter, DbReaderWriter};
 use tokio::runtime::{Builder, Runtime};
-use vm_validator::mocks::mock_vm_validator::MockVMValidator;
+use vmvalidator::MockVMValidator;
 
 type MempoolNetworkHandle = (
     NetworkId,

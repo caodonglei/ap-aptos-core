@@ -20,7 +20,7 @@ use network::application::storage::PeerMetadataStorage;
 use std::{collections::HashMap, sync::Arc};
 use storage_interface::DbReader;
 use tokio::runtime::{Builder, Handle, Runtime};
-use vm_validator::vm_validator::{TransactionValidation, VMValidator};
+use vmvalidator::{TransactionValidation, VMValidator};
 
 /// Bootstrap of SharedMempool.
 /// Creates a separate Tokio Runtime that runs the following routines:
