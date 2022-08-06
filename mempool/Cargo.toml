@@ -44,7 +44,7 @@ netcore = { path = "../network/netcore" }
 network = { path = "../network" }
 short-hex-str = { path = "../crates/short-hex-str" }
 storage-interface = { path = "../storage/storage-interface" }
-//vm-validator = { path = "../vm-validator" }
+#vm-validator = { path = "../vm-validator" }
 
 [dev-dependencies]
 enum_dispatch = "0.3.8"
@@ -57,5 +57,5 @@ storage-interface = { path = "../storage/storage-interface", features = ["fuzzin
 
 [features]
 default = []
-failpoints = ["fail/failpoints", "vm-validator/failpoints"]
+failpoints = ["fail/failpoints"] #, "vm-validator/failpoints"]
 fuzzing = ["proptest", "aptos-types/fuzzing", "storage-interface/fuzzing", "aptos-config/fuzzing"]
