@@ -8,9 +8,12 @@ use crate::{
     counters,
     logging::{LogEntry, LogEvent, LogSchema},
     network::{BroadcastError, MempoolSyncMsg},
-    shared_mempool::types::{
-        notify_subscribers, ScheduledBroadcast, SharedMempool, SharedMempoolNotification,
-        SubmissionStatusBundle,
+    shared_mempool::{
+        types::{
+            notify_subscribers, ScheduledBroadcast, SharedMempool, SharedMempoolNotification,
+            SubmissionStatusBundle,
+        },
+        vmvalidator::{get_account_sequence_number, TransactionValidation},
     },
     QuorumStoreRequest, QuorumStoreResponse, SubmissionStatus,
 };
@@ -38,7 +41,6 @@ use std::{
 };
 use storage_interface::state_view::LatestDbStateCheckpointView;
 use tokio::runtime::Handle;
-use vmvalidator::{get_account_sequence_number, TransactionValidation};
 
 // ============================== //
 //  broadcast_coordinator tasks  //

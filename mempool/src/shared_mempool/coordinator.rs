@@ -11,6 +11,7 @@ use crate::{
         tasks,
         tasks::process_committed_transactions,
         types::{notify_subscribers, ScheduledBroadcast, SharedMempool, SharedMempoolNotification},
+        vmvalidator::TransactionValidation,
     },
     MempoolEventsReceiver, QuorumStoreRequest,
 };
@@ -34,7 +35,6 @@ use std::{
 };
 use tokio::{runtime::Handle, time::interval};
 use tokio_stream::wrappers::IntervalStream;
-use vmvalidator::TransactionValidation;
 
 use super::types::MempoolClientRequest;
 

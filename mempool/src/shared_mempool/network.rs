@@ -11,6 +11,7 @@ use crate::{
         types::{
             notify_subscribers, BatchId, PeerSyncState, SharedMempool, SharedMempoolNotification,
         },
+        vmvalidator::TransactionValidation,
     },
 };
 use aptos_config::{
@@ -48,7 +49,6 @@ use std::{
     time::{Duration, Instant, SystemTime},
 };
 use thiserror::Error;
-use vmvalidator::TransactionValidation;
 
 /// Container for exchanging transactions with other Mempools.
 #[derive(Clone, Debug, Deserialize, Serialize)]

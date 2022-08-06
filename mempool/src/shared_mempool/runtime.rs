@@ -7,6 +7,7 @@ use crate::{
     shared_mempool::{
         coordinator::{coordinator, gc_coordinator, snapshot_job},
         types::{MempoolEventsReceiver, SharedMempool, SharedMempoolNotification},
+        vmvalidator::{TransactionValidation, VMValidator},
     },
     QuorumStoreRequest,
 };
@@ -20,7 +21,6 @@ use network::application::storage::PeerMetadataStorage;
 use std::{collections::HashMap, sync::Arc};
 use storage_interface::DbReader;
 use tokio::runtime::{Builder, Handle, Runtime};
-use vmvalidator::{TransactionValidation, VMValidator};
 
 /// Bootstrap of SharedMempool.
 /// Creates a separate Tokio Runtime that runs the following routines:

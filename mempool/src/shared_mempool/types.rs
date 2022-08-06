@@ -4,7 +4,10 @@
 //! Objects used by/related to shared mempool
 use crate::{
     core_mempool::CoreMempool, network::MempoolNetworkInterface,
-    shared_mempool::network::MempoolNetworkSender,
+    shared_mempool::{
+        network::MempoolNetworkSender,
+        vmvalidator::TransactionValidation,
+    },
 };
 use anyhow::Result;
 use aptos_config::{
@@ -35,7 +38,6 @@ use std::{
 };
 use storage_interface::DbReader;
 use tokio::runtime::Handle;
-use vmvalidator::TransactionValidation;
 
 /// Struct that owns all dependencies required by shared mempool routines.
 #[derive(Clone)]
