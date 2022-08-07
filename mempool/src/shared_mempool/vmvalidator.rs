@@ -20,6 +20,8 @@ use storage_interface::state_view::DbStateView;
 use storage_interface::{
     cached_state_view::CachedDbStateView, state_view::LatestDbStateCheckpointView, DbReader,
 };
+use aptos_state_view::account_with_state_view::AsAccountWithStateView;
+use aptos_types::account_view::AccountView;
 
 pub trait TransactionValidation: Send + Sync + Clone {
     type ValidationInstance: aptos_vm::VMValidator;

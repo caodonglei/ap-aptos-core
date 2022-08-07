@@ -7,7 +7,7 @@ use crate::{
     core_mempool::{
         index::TxnPointer,
         transaction::{MempoolTransaction, TimelineState},
-        transaction_store::TransactionStore,
+        ////transaction_store::TransactionStore,
         ttl_cache::TtlCache,
     },
     counters,
@@ -30,7 +30,8 @@ use std::{
 
 pub struct Mempool {
     // Stores the metadata of all transactions in mempool (of all states).
-    transactions: TransactionStore,
+    ////transactions: TransactionStore,
+    transactions: Vec<MempoolTransaction>,
 
     sequence_number_cache: TtlCache<AccountAddress, u64>,
     // For each transaction, an entry with a timestamp is added when the transaction enters mempool.
@@ -43,7 +44,8 @@ pub struct Mempool {
 impl Mempool {
     pub fn new(config: &NodeConfig) -> Self {
         Mempool {
-            transactions: TransactionStore::new(&config.mempool),
+            ////transactions: TransactionStore::new(&config.mempool),
+            transactions: Vec::new(),
             sequence_number_cache: TtlCache::new(config.mempool.capacity, Duration::from_secs(100)),
             metrics_cache: TtlCache::new(config.mempool.capacity, Duration::from_secs(100)),
             system_transaction_timeout: Duration::from_secs(
@@ -122,7 +124,8 @@ impl Mempool {
     }
 
     pub(crate) fn get_by_hash(&self, hash: HashValue) -> Option<SignedTransaction> {
-        self.transactions.get_by_hash(hash)
+        ////self.transactions.get_by_hash(hash)
+        None
     }
 
     /// Used to add a transaction to the Mempool.
@@ -302,7 +305,9 @@ impl Mempool {
     }
 
     pub fn gen_snapshot(&self) -> TxnsLog {
-        self.transactions.gen_snapshot(&self.metrics_cache)
+        ////self.transactions.gen_snapshot(&self.metrics_cache)
+        let mut txns_log = TxnsLog::new();
+        txns_log
     }
 
     #[cfg(test)]

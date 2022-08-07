@@ -356,9 +356,11 @@ pub(crate) async fn gc_coordinator(mempool: Arc<Mutex<CoreMempool>>, gc_interval
 /// In the future we may want an interactive way to directly query mempool's internal state.
 /// For now, we will rely on this periodic snapshot to observe the internal state.
 pub(crate) async fn snapshot_job(mempool: Arc<Mutex<CoreMempool>>, snapshot_interval_secs: u64) {
+    /* 屏蔽生成快照功能，需要代理
     let mut interval = IntervalStream::new(interval(Duration::from_secs(snapshot_interval_secs)));
     while let Some(_interval) = interval.next().await {
         let snapshot = mempool.lock().gen_snapshot();
         debug!(LogSchema::new(LogEntry::MempoolSnapshot).txns(snapshot));
     }
+    */
 }

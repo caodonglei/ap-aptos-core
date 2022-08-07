@@ -46,6 +46,7 @@ short-hex-str = { path = "../crates/short-hex-str" }
 storage-interface = { path = "../storage/storage-interface" }
 #vm-validator = { path = "../vm-validator" }
 aptos-vm = { path = "../aptos-move/aptos-vm" }
+aptos-state-view = { path = "../storage/state-view" }
 
 [dev-dependencies]
 enum_dispatch = "0.3.8"
